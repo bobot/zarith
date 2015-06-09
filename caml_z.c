@@ -2361,6 +2361,23 @@ CAMLprim value ml_z_hamdist(value arg1, value arg2)
   return Val_long(r);
 }
 
+CAMLprim value ml_z_tstbit(value a, value index)
+{
+  /** noalloc */
+  intnat idx = Long_val(index);
+  mpz_t ma;
+  ml_z_mpz_init_set_z(ma, a);
+  int r = mpz_tstbit(ma, (mp_bitcnt_t) idx);
+  mpz_clear(ma);
+  /* r can be only 0 or 1 */
+  return Val_long(r);
+}
+
+  /* XXX should we support the following?
+   mpz_scan0, mpz_scan1
+   mpz_setbit, mpz_clrbit, mpz_combit
+   mpz_odd_p, mpz_even_p
+  */
 
 /*---------------------------------------------------
   FUNCTIONS BASED ON mpz_t
@@ -2554,9 +2571,6 @@ CAMLprim value ml_z_invert(value base, value mod)
    mpz_bin_ui
    mpz_fib_ui
    mpz_lucnum_ui
-   mpz_scan0, mpz_scan1
-   mpz_setbit, mpz_clrbit, mpz_combit, mpz_tstbit
-   mpz_odd_p, mpz_even_p
    random numbers
 */
 

@@ -214,6 +214,9 @@ external shift_right_trunc: t -> int -> t = shift_right_trunc@ASM
     The second argument must be non-negative.
  *)
 
+val tstbit: t -> int -> bool
+(** Test the specified bit in the given number *)
+
 external popcount: t -> int = "ml_z_popcount"
 (** Counts the number of bits set. 
     Raises [Overflow] for negative arguments, as those have an infinite

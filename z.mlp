@@ -135,6 +135,11 @@ let signed_extract x o l =
   then extract x o l
   else lognot (extract (lognot x) o l)
 
+external tstbit_aux: t -> int -> bool = "ml_z_tstbit" "noalloc"
+let tstbit x i =
+  if i < 0 then invalid_arg "Z.tstbit: negative arguments";
+  tstbit_aux x i
+
 let print x = print_string (to_string x)
 let output chan x = output_string chan (to_string x)
 let sprint () x = to_string x

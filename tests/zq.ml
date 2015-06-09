@@ -431,6 +431,18 @@ let test_Z() =
   Printf.printf "2 << 299\n = %a\n" pr (I.shift_left p2 299);
   Printf.printf "2^120 << 1\n = %a\n" pr (I.shift_left p120 1);
   Printf.printf "2^120 << 180\n = %a\n" pr (I.shift_left p120 180);
+  let print_bit v first last cout =
+    for i=first to last do
+      (if (I.tstbit v i) then output_string cout "1" else output_string cout "0")
+    done
+  in
+  Printf.printf "1[0..121]        = %t\n" (print_bit I.one 0 121);
+  Printf.printf "-1[0..121]       = %t\n" (print_bit I.minus_one 0 121);
+  Printf.printf "2^120[0..121]    = %t\n" (print_bit p120 0 121);
+  Printf.printf "-2^120[0..121]   = %t\n" (print_bit (I.neg p120) 0 121);
+  Printf.printf "-2^120[122..243] = %t\n" (print_bit (I.neg p120) 122 243);
+  Printf.printf "max_int[0..121]  = %t\n" (print_bit maxi 0 121);
+  Printf.printf "min_int[0..121]  = %t\n" (print_bit mini 0 121);
   Printf.printf "compare 1 2\n = %i\n" (I.compare I.one p2);
   Printf.printf "compare 1 1\n = %i\n" (I.compare I.one I.one);
   Printf.printf "compare 2 1\n = %i\n" (I.compare p2 I.one);
