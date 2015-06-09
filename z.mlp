@@ -140,6 +140,18 @@ let tstbit x i =
   if i < 0 then invalid_arg "Z.tstbit: negative arguments";
   tstbit_aux x i
 
+external scan0_aux: t -> int -> int = "ml_z_scan0" "noalloc"
+let scan0 x i =
+  if i < 0 then invalid_arg "Z.scan0: negative arguments";
+  let r = scan0_aux x i in
+  if r = -2 then raise Overflow else r
+
+external scan1_aux: t -> int -> int = "ml_z_scan1" "noalloc"
+let scan1 x i =
+  if i < 0 then invalid_arg "Z.scan0: negative arguments";
+  let r = scan1_aux x i in
+  if r = -2 then raise Overflow else r
+
 let print x = print_string (to_string x)
 let output chan x = output_string chan (to_string x)
 let sprint () x = to_string x
