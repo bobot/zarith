@@ -2373,8 +2373,41 @@ CAMLprim value ml_z_tstbit(value a, value index)
   return Val_long(r);
 }
 
+CAMLprim value ml_z_scan0(value a, value index)
+{
+  /** noalloc */
+  mpz_t ma;
+  mp_bitcnt_t r;
+  mp_bitcnt_t idx = Long_val(index); /** non negative */
+  ml_z_mpz_init_set_z(ma, a);
+  r = mpz_scan0(ma, idx);
+  mpz_clear(ma);
+  /** no bit found */
+  if(r == ~(mp_bitcnt_t) 0) return Val_long(-1);
+  /** overflow */
+  if(Z_MAX_INT < r) return Val_long(-2);
+  /** normal case */
+  return Val_long(r);
+}
+
+CAMLprim value ml_z_scan1(value a, value index)
+{
+  /** noalloc */
+  mpz_t ma;
+  mp_bitcnt_t r;
+  mp_bitcnt_t idx = Long_val(index); /** non negative */
+  ml_z_mpz_init_set_z(ma, a);
+  r = mpz_scan1(ma, idx);
+  mpz_clear(ma);
+  /** no bit found */
+  if(r == ~(mp_bitcnt_t) 0) return Val_long(-1);
+  /** overflow */
+  if(Z_MAX_INT < r) return Val_long(-2);
+  /** normal case */
+  return Val_long(r);
+}
+
   /* XXX should we support the following?
-   mpz_scan0, mpz_scan1
    mpz_setbit, mpz_clrbit, mpz_combit
    mpz_odd_p, mpz_even_p
   */

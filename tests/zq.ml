@@ -443,6 +443,19 @@ let test_Z() =
   Printf.printf "-2^120[122..243] = %t\n" (print_bit (I.neg p120) 122 243);
   Printf.printf "max_int[0..121]  = %t\n" (print_bit maxi 0 121);
   Printf.printf "min_int[0..121]  = %t\n" (print_bit mini 0 121);
+  let print_scan cout v =
+    let print cout scan =
+      List.iter (fun i -> Printf.fprintf cout "%i;" (scan v i))
+        [0;1;10;30;32;60;62;100;120;121;200;]
+    in
+    Printf.fprintf cout "[%a] [%a]" print I.scan0 print I.scan1
+  in
+  Printf.printf "scan01 1       [0;1;10;30;32;60;62;100;120;121;200;] = %a\n" print_scan I.one;
+  Printf.printf "scan01 -1      [0;1;10;30;32;60;62;100;120;121;200;] = %a\n" print_scan I.minus_one;
+  Printf.printf "scan01 2^120   [0;1;10;30;32;60;62;100;120;121;200;] = %a\n" print_scan p120;
+  Printf.printf "scan01 -2^120  [0;1;10;30;32;60;62;100;120;121;200;] = %a\n" print_scan (I.neg p120);
+  Printf.printf "scan01 max_int [0;1;10;30;32;60;62;100;120;121;200;] = %a\n" print_scan maxi;
+  Printf.printf "scan01 min_int [0;1;10;30;32;60;62;100;120;121;200;] = %a\n" print_scan mini;
   Printf.printf "compare 1 2\n = %i\n" (I.compare I.one p2);
   Printf.printf "compare 1 1\n = %i\n" (I.compare I.one I.one);
   Printf.printf "compare 2 1\n = %i\n" (I.compare p2 I.one);

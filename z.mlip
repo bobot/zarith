@@ -179,6 +179,8 @@ external divexact: t -> t -> t = "ml_z_divexact"
 (** For all bit-level operations, negative numbers are considered in 2's
     complement representation, starting with a virtual infinite number of 
     1s.
+
+    The first bit is at index 0.
  *)
 
 external logand: t -> t -> t = logand@ASM
@@ -216,6 +218,16 @@ external shift_right_trunc: t -> int -> t = shift_right_trunc@ASM
 
 val tstbit: t -> int -> bool
 (** Test the specified bit in the given number *)
+
+val scan0: t -> int -> int
+val scan1: t -> int -> int
+(** Scan the given number from the given bit, towards more significant bits,
+    until the first 0 or 1 bit (respectively) is found. Return the index of the found bit.
+
+    If the bit at the given index is already what is sought, then the given index is returned.
+
+    If there is no bit found [-1] is returned.
+*)
 
 external popcount: t -> int = "ml_z_popcount"
 (** Counts the number of bits set. 
