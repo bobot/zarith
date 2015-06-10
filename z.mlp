@@ -159,6 +159,22 @@ external setbit: t -> int -> t = "ml_z_setbit"
 external clrbit: t -> int -> t = "ml_z_clrbit"
 external combit: t -> int -> t = "ml_z_combit"
 
+external sizeinbase_aux: t -> int -> int = "ml_z_sizeinbase" "noalloc"
+let sizeinbase v base =
+  if not (2 <= base || base <= 62) then
+    invalid_arg "Z.sizeinbase: base must be between 2 and 62";
+  let r = sizeinbase_aux v base in
+  if r = -2 then raise Overflow else r
+
+external findlastset_aux: t -> int = "ml_z_findlastset" "noalloc"
+let findlastset v =
+  let r = findlastset_aux v in
+  if r = -2 then raise Overflow else r
+
+external findfirstset_aux: t -> int = "ml_z_findfirstset" "noalloc"
+let findfirstset v =
+  let r = findfirstset_aux v in
+  if r = -2 then raise Overflow else r
 
 let print x = print_string (to_string x)
 let output chan x = output_string chan (to_string x)

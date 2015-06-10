@@ -2361,6 +2361,53 @@ CAMLprim value ml_z_hamdist(value arg1, value arg2)
   return Val_long(r);
 }
 
+CAMLprim value ml_z_sizeinbase(value arg, value base)
+{
+  /* noalloc */
+  Z_DECL(arg);
+  size_t r;
+  Z_MARK_OP;
+  Z_CHECK(arg);
+  Z_ARG(arg);
+  if (!size_arg) return Val_long(0);
+  r =  mpn_sizeinbase(ptr_arg, size_arg, Long_val(base));
+  /** error raised in ocaml (noalloc) */
+  if (Z_MAX_INT < r) return Val_long(-2);
+  return Val_long(r);
+}
+
+CAMLprim value ml_z_findlastset(value arg)
+{
+  /* noalloc */
+  Z_DECL(arg);
+  size_t r;
+  Z_MARK_OP;
+  Z_CHECK(arg);
+  Z_ARG(arg);
+  if (!size_arg) return Val_long(-1);
+  r =  mpn_sizeinbase(ptr_arg, size_arg, 2)-1;
+  /** error raised in ocaml (noalloc) */
+  if (Z_MAX_INT < r) return Val_long(-2);
+  return Val_long(r);
+}
+
+CAMLprim value ml_z_findfirstset(value arg)
+{
+  /* noalloc */
+  Z_DECL(arg);
+  mp_bitcnt_t r;
+  Z_MARK_OP;
+  Z_CHECK(arg);
+  Z_ARG(arg);
+  if (!size_arg) return Val_long(-1);
+  /** The first bit of a number is the same than the one of its
+      absolute value */
+  r =  mpn_scan1(ptr_arg, 0);
+  /** error raised in ocaml (noalloc) */
+  if (Z_MAX_INT < r) return Val_long(-2);
+  return Val_long(r);
+}
+
 CAMLprim value ml_z_tstbit(value a, value index)
 {
   /** noalloc */

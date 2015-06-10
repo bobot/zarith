@@ -240,6 +240,22 @@ val clrbit: t -> int -> t
 val combit: t -> int -> t
 (** set, clear or complement the specified bit of the given number *)
 
+val sizeinbase: t -> int -> int
+(** Return the size of the given number measured in the given base.
+    The sign is ignored, only the absolute value is used. The result is
+    exact if base is a power of two, otherwise either exact or 1 too big.
+*)
+
+val findlastset: t -> int
+(** Return the index of the last bit of the absolute value of the given number.
+    Return -1 for 0.
+*)
+
+val findfirstset: t -> int
+(** Return the index of the first bit of the given number.
+    Return -1 for 0.
+*)
+
 external popcount: t -> int = "ml_z_popcount"
 (** Counts the number of bits set. 
     Raises [Overflow] for negative arguments, as those have an infinite
