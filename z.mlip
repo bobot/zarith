@@ -219,6 +219,12 @@ external shift_right_trunc: t -> int -> t = shift_right_trunc@ASM
 val tstbit: t -> int -> bool
 (** Test the specified bit in the given number *)
 
+val is_odd: t -> bool
+(** Test if the given number is odd *)
+
+val is_even: t -> bool
+(** Test if the given number is even *)
+
 val scan0: t -> int -> int
 val scan1: t -> int -> int
 (** Scan the given number from the given bit, towards more significant bits,

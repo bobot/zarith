@@ -152,6 +152,9 @@ let scan1 x i =
   let r = scan1_aux x i in
   if r = -2 then raise Overflow else r
 
+external is_odd: t -> bool = "ml_z_odd_p"
+external is_even: t -> bool = "ml_z_even_p"
+
 let print x = print_string (to_string x)
 let output chan x = output_string chan (to_string x)
 let sprint () x = to_string x
