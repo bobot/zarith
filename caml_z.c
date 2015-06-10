@@ -2407,9 +2407,28 @@ CAMLprim value ml_z_scan1(value a, value index)
   return Val_long(r);
 }
 
+CAMLprim value ml_z_odd_p(value a)
+{
+  /** noalloc */
+  mpz_t ma;
+  ml_z_mpz_init_set_z(ma, a);
+  int r = mpz_odd_p(ma);
+  mpz_clear(ma);
+  return Val_bool(r);
+}
+
+CAMLprim value ml_z_even_p(value a)
+{
+  /** noalloc */
+  mpz_t ma;
+  ml_z_mpz_init_set_z(ma, a);
+  int r = mpz_even_p(ma);
+  mpz_clear(ma);
+  return Val_bool(r);
+}
+
   /* XXX should we support the following?
    mpz_setbit, mpz_clrbit, mpz_combit
-   mpz_odd_p, mpz_even_p
   */
 
 /*---------------------------------------------------
