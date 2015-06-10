@@ -235,6 +235,11 @@ val scan1: t -> int -> int
     If there is no bit found [-1] is returned.
 *)
 
+val setbit: t -> int -> t
+val clrbit: t -> int -> t
+val combit: t -> int -> t
+(** set, clear or complement the specified bit of the given number *)
+
 external popcount: t -> int = "ml_z_popcount"
 (** Counts the number of bits set. 
     Raises [Overflow] for negative arguments, as those have an infinite

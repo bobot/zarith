@@ -155,6 +155,11 @@ let scan1 x i =
 external is_odd: t -> bool = "ml_z_odd_p"
 external is_even: t -> bool = "ml_z_even_p"
 
+external setbit: t -> int -> t = "ml_z_setbit"
+external clrbit: t -> int -> t = "ml_z_clrbit"
+external combit: t -> int -> t = "ml_z_combit"
+
+
 let print x = print_string (to_string x)
 let output chan x = output_string chan (to_string x)
 let sprint () x = to_string x
