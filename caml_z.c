@@ -2427,9 +2427,47 @@ CAMLprim value ml_z_even_p(value a)
   return Val_bool(r);
 }
 
-  /* XXX should we support the following?
-   mpz_setbit, mpz_clrbit, mpz_combit
-  */
+CAMLprim value ml_z_setbit(value a, value index)
+{
+  CAMLparam2(a,index);
+  CAMLlocal1(r);
+  mpz_t ma;
+  intnat idx = Long_val(index);
+  if(idx < 0) caml_invalid_argument("Z.setbit: negative index");
+  ml_z_mpz_init_set_z(ma, a);
+  mpz_setbit(ma, (mp_bitcnt_t) idx);
+  r = ml_z_from_mpz(ma);
+  mpz_clear(ma);
+  CAMLreturn(r);
+}
+
+CAMLprim value ml_z_clrbit(value a, value index)
+{
+  CAMLparam2(a,index);
+  CAMLlocal1(r);
+  mpz_t ma;
+  intnat idx = Long_val(index);
+  if(idx < 0) caml_invalid_argument("Z.clrbit: negative index");
+  ml_z_mpz_init_set_z(ma, a);
+  mpz_clrbit(ma, (mp_bitcnt_t) idx);
+  r = ml_z_from_mpz(ma);
+  mpz_clear(ma);
+  CAMLreturn(r);
+}
+
+CAMLprim value ml_z_combit(value a, value index)
+{
+  CAMLparam2(a,index);
+  CAMLlocal1(r);
+  mpz_t ma;
+  intnat idx = Long_val(index);
+  if(idx < 0) caml_invalid_argument("Z.combit: negative index");
+  ml_z_mpz_init_set_z(ma, a);
+  mpz_combit(ma, (mp_bitcnt_t) idx);
+  r = ml_z_from_mpz(ma);
+  mpz_clear(ma);
+  CAMLreturn(r);
+}
 
 /*---------------------------------------------------
   FUNCTIONS BASED ON mpz_t
