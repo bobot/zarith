@@ -333,13 +333,10 @@ static inline mp_limb_t* ml_z_dup_limb(mp_limb_t* src, mp_size_t sz)
    if arg is an int, it is converted to a 1-limb number
 */
 #define Z_DECL(arg)                                                     \
-  mp_limb_t loc_##arg, *ptr_##arg;                                      \
-  mp_size_t size_##arg;                                                 \
-  intnat sign_##arg;                                                    \
-  (void)loc_##arg;                                                      \
-  (void)ptr_##arg;                                                      \
-  (void)size_##arg;                                                     \
-  (void)sign_##arg;
+  mp_limb_t loc_##arg __attribute__ ((unused));                         \
+  mp_limb_t *ptr_##arg __attribute__ ((unused));                        \
+  mp_size_t size_##arg __attribute__ ((unused));                        \
+  intnat sign_##arg __attribute__ ((unused));
 
 #define Z_ARG(arg)                                                      \
   if (Is_long(arg)) {                                                   \
