@@ -30,7 +30,7 @@ bench:: tak.exe
 bench:: pi.exe
 	@echo "Benchmarking pi"; time ./pi.exe 10000 > /dev/null
 
-%.exe: %.ml ../zarith.cmxa
+%.exe: %.ml ../zarith.cmxa ../libzarith.a
 	ocamlopt -I .. -ccopt "-L.." zarith.cmxa nums.cmxa -o $*.exe $*.ml
 %.byt: %.ml ../zarith.cma
 	ocamlc -I .. -ccopt "-L.." zarith.cma nums.cma -o $*.byt $*.ml
