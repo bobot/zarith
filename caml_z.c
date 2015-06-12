@@ -2406,15 +2406,33 @@ CAMLprim value ml_z_findfirstset(value arg)
   /* noalloc */
   Z_DECL(arg);
   mp_bitcnt_t r;
+  mp_limb_t *p;
+  mp_limb_t x;
   Z_MARK_OP;
   Z_CHECK(arg);
+#if Z_FAST_PATH
+  if (Is_long(arg)) {
+    if (arg == Val_long(0)){
+      return Val_long(-1);
+    } else {
+      r = __builtin_ctzl(Long_val(arg));
+      return Val_long(r);
+    }
+  }
+#endif
   Z_ARG(arg);
   if (!size_arg) return Val_long(-1);
   /** The first bit of a number is the same than the one of its
-      absolute value */
-  r =  mpn_scan1(ptr_arg, 0);
-  /** error raised in ocaml (noalloc) */
-  if (Z_MAX_INT < r) return Val_long(-2);
+      absolute value so doesn't take the sign into account */
+  p = ptr_arg;
+  do {
+   x = *p++;
+  } while(x == 0);
+  p--; /* remove the last p++ */
+  /** check for possible overflow, it is raised in OCaml (noalloc) */
+  if (((Z_MAX_INT-Z_LIMB_BITS) / Z_LIMB_BITS)
+      < (unsigned long) (p - ptr_arg)) return Val_long(-2);
+  r = __builtin_ctzl(x) + ((p - ptr_arg) * Z_LIMB_BITS);
   return Val_long(r);
 }
 
