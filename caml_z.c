@@ -2377,14 +2377,27 @@ CAMLprim value ml_z_findlastset(value arg)
 {
   /* noalloc */
   Z_DECL(arg);
-  size_t r;
+  intnat r;
   Z_MARK_OP;
   Z_CHECK(arg);
+#if Z_FAST_PATH
+  if (Is_long(arg)) {
+    if (arg == Val_long(0)){
+      return Val_long(-1);
+    } else {
+      intnat n = Long_val(arg);
+      r = (Z_LIMB_BITS - 1) - __builtin_clzl(n < 0 ? -n : n);
+      return Val_long(r);
+    }
+  }
+#endif
   Z_ARG(arg);
   if (!size_arg) return Val_long(-1);
-  r =  mpn_sizeinbase(ptr_arg, size_arg, 2)-1;
-  /** error raised in ocaml (noalloc) */
-  if (Z_MAX_INT < r) return Val_long(-2);
+  /** check for possible overflow, it is raised in Ocaml (noalloc) */
+  if (((Z_MAX_INT - (Z_LIMB_BITS - 1)) / Z_LIMB_BITS)
+         < (unsigned long) (size_arg - 1)) return Val_long(-2);
+  r = ((Z_LIMB_BITS - 1) - __builtin_clzl(ptr_arg[size_arg-1]))
+         + ((size_arg-1) *  Z_LIMB_BITS);
   return Val_long(r);
 }
 
