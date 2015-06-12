@@ -359,6 +359,17 @@ static inline mp_limb_t* ml_z_dup_limb(mp_limb_t* src, mp_size_t sz)
 #define Z_REFRESH(arg) \
   if (! Is_long(arg)) ptr_##arg = Z_LIMB(arg);
 
+/* Create a readonly mpz from an OCaml value without copying */
+#define Z_READONLY_DECL(z)                      \
+  Z_DECL(z);                                    \
+  mpz_t mpz_##z;
+
+#define Z_READONLY_ARG(z)                                         \
+  Z_ARG(z);                                                       \
+  mpz_##z->_mp_size = (sign_##z >= 0) ? size_##z : -size_##z;     \
+  mpz_##z->_mp_d = ptr_##z;                                       \
+  mpz_##z->_mp_alloc = size_##z;
+
 /* computes the actual size of the z object r and updates its header,
    either returns r or, if the number is small enough, an int
  */
@@ -2439,11 +2450,22 @@ CAMLprim value ml_z_findfirstset(value arg)
 CAMLprim value ml_z_tstbit(value a, value index)
 {
   /** noalloc */
-  intnat idx = Long_val(index);
-  mpz_t ma;
-  ml_z_mpz_init_set_z(ma, a);
-  int r = mpz_tstbit(ma, (mp_bitcnt_t) idx);
-  mpz_clear(ma);
+  Z_READONLY_DECL(a);
+  intnat idx;
+  Z_MARK_OP;
+  Z_CHECK(a);
+  idx = Long_val(index);
+#if Z_FAST_PATH
+  if (Is_long(a)) {
+    if((unsigned long) idx <= Z_LIMB_BITS-1){
+      return Val_bool(Long_val(a) & ((intnat)1 << idx));
+    } else {
+      return (Long_val(a)<0 ? Val_true : Val_false);
+    }
+  }
+#endif
+  Z_READONLY_ARG(a);
+  int r = mpz_tstbit(mpz_a, (mp_bitcnt_t) idx);
   /* r can be only 0 or 1 */
   return Val_long(r);
 }
