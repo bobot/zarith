@@ -2473,12 +2473,23 @@ CAMLprim value ml_z_tstbit(value a, value index)
 CAMLprim value ml_z_scan0(value a, value index)
 {
   /** noalloc */
-  mpz_t ma;
+  Z_READONLY_DECL(a);
   mp_bitcnt_t r;
   mp_bitcnt_t idx = Long_val(index); /** non negative */
-  ml_z_mpz_init_set_z(ma, a);
-  r = mpz_scan0(ma, idx);
-  mpz_clear(ma);
+  Z_MARK_OP;
+#if Z_FAST_PATH
+  if (Is_long(a)) {
+    if((unsigned long) idx <= Z_LIMB_BITS-1){
+      /** __builtin_ffsl return 0 for 0 so -1 give the expected -1 */
+      r = __builtin_ffsl((~Long_val(a)) & (- (intnat)1 << idx)) - 1;
+      return Val_long(r);
+    } else {
+      return (Long_val(a)<0 ? Val_long(-1) : index);
+    }
+  }
+#endif
+  Z_READONLY_ARG(a);
+  r = mpz_scan0(mpz_a, idx);
   /** no bit found */
   if(r == ~(mp_bitcnt_t) 0) return Val_long(-1);
   /** overflow */
@@ -2490,12 +2501,23 @@ CAMLprim value ml_z_scan0(value a, value index)
 CAMLprim value ml_z_scan1(value a, value index)
 {
   /** noalloc */
-  mpz_t ma;
+  Z_READONLY_DECL(a);
   mp_bitcnt_t r;
   mp_bitcnt_t idx = Long_val(index); /** non negative */
-  ml_z_mpz_init_set_z(ma, a);
-  r = mpz_scan1(ma, idx);
-  mpz_clear(ma);
+  Z_MARK_OP;
+#if Z_FAST_PATH
+  if (Is_long(a)) {
+    if((unsigned long) idx <= Z_LIMB_BITS-1){
+      /** __builtin_ffsl return 0 for 0 so -1 give the expected -1 */
+      r = __builtin_ffsl(Long_val(a) & (- (intnat)1 << idx)) - 1;
+      return Val_long(r);
+    } else {
+      return (Long_val(a)<0 ? index : Val_long(-1));
+    }
+  }
+#endif
+  Z_READONLY_ARG(a);
+  r = mpz_scan1(mpz_a, idx);
   /** no bit found */
   if(r == ~(mp_bitcnt_t) 0) return Val_long(-1);
   /** overflow */
