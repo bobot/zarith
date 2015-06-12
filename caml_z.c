@@ -2529,20 +2529,30 @@ CAMLprim value ml_z_scan1(value a, value index)
 CAMLprim value ml_z_odd_p(value a)
 {
   /** noalloc */
-  mpz_t ma;
-  ml_z_mpz_init_set_z(ma, a);
-  int r = mpz_odd_p(ma);
-  mpz_clear(ma);
+  Z_READONLY_DECL(a);
+  Z_CHECK(a);
+#if Z_FAST_PATH
+  if (Is_long(a)) {
+    return Val_bool(a & 2);
+  }
+#endif
+  Z_READONLY_ARG(a);
+  int r = mpz_odd_p(mpz_a);
   return Val_bool(r);
 }
 
 CAMLprim value ml_z_even_p(value a)
 {
   /** noalloc */
-  mpz_t ma;
-  ml_z_mpz_init_set_z(ma, a);
-  int r = mpz_even_p(ma);
-  mpz_clear(ma);
+  Z_READONLY_DECL(a);
+  Z_CHECK(a);
+#if Z_FAST_PATH
+  if (Is_long(a)) {
+    return Val_bool(!(a & 2));
+  }
+#endif
+  Z_READONLY_ARG(a);
+  int r = mpz_even_p(mpz_a);
   return Val_bool(r);
 }
 
