@@ -2560,42 +2560,120 @@ CAMLprim value ml_z_setbit(value a, value index)
 {
   CAMLparam2(a,index);
   CAMLlocal1(r);
+  Z_DECL(a);
+  Z_CHECK(a);
   mpz_t ma;
+  if(index < 0) caml_invalid_argument("Z.setbit: negative index");
   intnat idx = Long_val(index);
-  if(idx < 0) caml_invalid_argument("Z.setbit: negative index");
-  ml_z_mpz_init_set_z(ma, a);
-  mpz_setbit(ma, (mp_bitcnt_t) idx);
-  r = ml_z_from_mpz(ma);
-  mpz_clear(ma);
-  CAMLreturn(r);
+
+#if Z_FAST_PATH
+  if (Is_long(a) && index < (intnat) (Z_LIMB_BITS-1)) {
+    return a | (intnat) 1 << (idx+1);
+  }
+#endif
+  Z_ARG(a);
+  if(!sign_a){
+    mp_size_t nb_limb = idx / Z_LIMB_BITS;
+    mp_size_t new_size = (nb_limb+1 > size_a ? nb_limb+1 : size_a);
+    value r = ml_z_alloc(new_size);
+    ml_z_cpy_limb(Z_LIMB(r),ptr_a,size_a);
+    /** initialize the remaining part of the array */
+    mp_size_t i = size_a;
+    while(i < new_size){
+      Z_LIMB(r)[i] = 0;
+      i++;
+    };
+    Z_LIMB(r)[nb_limb] |= (mp_limb_t) 1 << (idx % Z_LIMB_BITS);
+    r = ml_z_reduce(r,new_size,sign_a);
+    Z_CHECK(z);
+    CAMLreturn(r);
+  } else {
+    ml_z_mpz_init_set_z(ma, a);
+    mpz_setbit(ma, (mp_bitcnt_t) idx);
+    r = ml_z_from_mpz(ma);
+    mpz_clear(ma);
+    CAMLreturn(r);
+  }
 }
 
 CAMLprim value ml_z_clrbit(value a, value index)
 {
   CAMLparam2(a,index);
   CAMLlocal1(r);
+  Z_DECL(a);
+  Z_CHECK(a);
   mpz_t ma;
+  if(index < 0) caml_invalid_argument("Z.clrbit: negative index");
   intnat idx = Long_val(index);
-  if(idx < 0) caml_invalid_argument("Z.clrbit: negative index");
-  ml_z_mpz_init_set_z(ma, a);
-  mpz_clrbit(ma, (mp_bitcnt_t) idx);
-  r = ml_z_from_mpz(ma);
-  mpz_clear(ma);
-  CAMLreturn(r);
+
+#if Z_FAST_PATH
+  if (Is_long(a) && idx < (intnat) (Z_LIMB_BITS-1)) {
+    return a & ~ ((intnat) 1 << (idx+1));
+  }
+#endif
+  Z_ARG(a);
+  if(!sign_a){
+    mp_size_t nb_limb = idx / Z_LIMB_BITS;
+    mp_size_t new_size = (nb_limb+1 > size_a ? nb_limb+1 : size_a);
+    value r = ml_z_alloc(new_size);
+    ml_z_cpy_limb(Z_LIMB(r),ptr_a,size_a);
+    /** initialize the remaining part of the array */
+    mp_size_t i = size_a;
+    while(i < new_size){
+      Z_LIMB(r)[i] = 0;
+      i++;
+    };
+    Z_LIMB(r)[nb_limb] &= ~ ((mp_limb_t) 1 << (idx % Z_LIMB_BITS));
+    r = ml_z_reduce(r,new_size,sign_a);
+    Z_CHECK(z);
+    CAMLreturn(r);
+  } else {
+    ml_z_mpz_init_set_z(ma, a);
+    mpz_clrbit(ma, (mp_bitcnt_t) idx);
+    r = ml_z_from_mpz(ma);
+    mpz_clear(ma);
+    CAMLreturn(r);
+  }
 }
 
 CAMLprim value ml_z_combit(value a, value index)
 {
   CAMLparam2(a,index);
   CAMLlocal1(r);
+  Z_DECL(a);
+  Z_CHECK(a);
   mpz_t ma;
+  if(index < 0) caml_invalid_argument("Z.combit: negative index");
   intnat idx = Long_val(index);
-  if(idx < 0) caml_invalid_argument("Z.combit: negative index");
-  ml_z_mpz_init_set_z(ma, a);
-  mpz_combit(ma, (mp_bitcnt_t) idx);
-  r = ml_z_from_mpz(ma);
-  mpz_clear(ma);
-  CAMLreturn(r);
+
+#if Z_FAST_PATH
+  if (Is_long(a) && idx < (intnat) (Z_LIMB_BITS-1)) {
+    return a ^ ((intnat) 1 << (idx+1));
+  }
+#endif
+  Z_ARG(a);
+  if(!sign_a){
+    mp_size_t nb_limb = idx / Z_LIMB_BITS;
+    mp_size_t new_size = (nb_limb+1 > size_a ? nb_limb+1 : size_a);
+    value r = ml_z_alloc(new_size);
+    ml_z_cpy_limb(Z_LIMB(r),ptr_a,size_a);
+    /** initialize the remaining part of the array */
+    mp_size_t i = size_a;
+    while(i < new_size){
+      Z_LIMB(r)[i] = 0;
+      i++;
+    };
+    Z_LIMB(r)[nb_limb] ^= ((mp_limb_t) 1 << (idx % Z_LIMB_BITS));
+    r = ml_z_reduce(r,new_size,sign_a);
+    Z_CHECK(z);
+    CAMLreturn(r);
+  } else {
+    ml_z_mpz_init_set_z(ma, a);
+    mpz_combit(ma, (mp_bitcnt_t) idx);
+    r = ml_z_from_mpz(ma);
+    mpz_clear(ma);
+    CAMLreturn(r);
+  }
 }
 
 /*---------------------------------------------------
