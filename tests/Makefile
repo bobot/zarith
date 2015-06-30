@@ -30,6 +30,9 @@ bench:: tak.exe
 bench:: pi.exe
 	@echo "Benchmarking pi"; time ./pi.exe 10000 > /dev/null
 
+microbench.exe: microbench.ml
+	ocamlfind ocamlopt -thread -linkpkg -package core_bench -I .. zarith.cmxa nums.cmxa -o $@ $^
+
 %.exe: %.ml ../zarith.cmxa ../libzarith.a
 	ocamlopt -I .. -ccopt "-L.." zarith.cmxa nums.cmxa -o $*.exe $*.ml
 %.byt: %.ml ../zarith.cma
